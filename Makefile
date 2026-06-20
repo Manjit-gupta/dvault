@@ -1,10 +1,8 @@
 build:
 	docker build -f Dockerfile -t dvaultd .
-
-start_server:
+rt_server:
 	docker run --rm -it -e TAG=server --name dvaultd_server dvaultd
-
-start_client:
+rt_client:
 	docker run --rm -it -e TAG=client --name dvaultd_client dvaultd
 
 run_ipfs:

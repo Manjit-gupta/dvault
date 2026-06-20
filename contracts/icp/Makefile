@@ -9,8 +9,7 @@ test:
 
 test_e2e: export_identity
 	cargo test --jobs 1 -- --nocapture --test-threads 1 $(name)
-
-start:
+rt:
 	dfx start --clean --host 127.0.0.1:7777
 
 pre_install:

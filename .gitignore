@@ -1,3 +1,4 @@
 .vscode
 target
 .ssh
+contracts/icp/.env
