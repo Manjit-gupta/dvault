@@ -1,70 +1,75 @@
 # dVault
 
-This project is intended to improve **security** and usability of **secret data delivering** to the edge and make a distributed chain of trust.
+`dVault` is a decentralized secret delivery system for edge devices. It combines smart contracts, IPFS, and encrypted key exchange to securely rotate and distribute certificates, SSH keys, API tokens, and other private data.
 
-This theme is very crucial for the IIoT and DePIN sector. There are a lot of new devices set up every day with various purposes, from home to industrial. IIoT area is expected to have billions of devices in the near future. To have secure and automated infrastructure for secret data (such as certificates or API tokens) distribution and rotation is important for proper, healthy and secure work of any project or company. Here we come with the dVault solution for DePIN to improve remote access to drones, vehicles and robots and communication between them.
+## Why it matters
 
-| Problem | Solution |
+The IIoT and DePIN sectors are growing fast, with billions of connected devices expected in the near future. Securely distributing and rotating private data to remote devices is critical for maintaining trust, preventing compromise, and reducing reliance on centralized infrastructure.
+
+| Problem | dVault solution |
 | - | - |
-| There is **no secure** and decentralized solution to distribute private data across devices. Centralized solutions **can’t work** in an **honest and transparent** way and **require infrastructure**. | Decentralized **no-infrastructure** way, to **securely distribute** private data utilizes the  smart contracts for **integrity** and IPFS to **avoid infrastructure**. |
+| No secure decentralized way to distribute private data across devices. Centralized solutions are not transparent and require infrastructure. | Use smart contracts for integrity and IPFS for distributed storage so secrets can be shared without a central server. |
 
-**Benefits**
+## Benefits
 
-- **Activity history** is publicity available and **immutable**.
-- **No centralized** and managed **infrastructure**.
-- User doesn’t need to trust third-party company, transparent **integrity**.
-- **Distributed responsibility**.
+- Activity history is publicly available and immutable.
+- No centralized or managed infrastructure required.
+- Transparent integrity without trusting a third party.
+- Distributed responsibility and stronger fault tolerance.
 
-## Use-cases
+## Use cases
 
-Here are real examples of such system usage.
+### SSH key rotation
 
-### SSH keys rotation
+Remote access to drones, vehicles, and robots often depends on SSH. Secure key rotation improves overall system security by making credential updates frequent and automated.
 
-To have a remote access to drones, vehicles or robots some companies use SSH protocol.
+Typical rotation flow:
 
-The simplest way to improve overall system security while working with SSH - often keys rotation. Rotation flow is quite straightforward:
+1. Issue a new SSH key pair.
+2. Sign the key pair with a certificate authority (CA).
+3. Deliver the encrypted key pair to the device.
+4. Revoke the old key pair.
 
-1. Issue new SSH key pair
-2. Sign issued key pair with certificate authority key pair
-3. Deliver new key pair to device
-4. Revoke old key pair
-
-With our system such flow can be done frequently and securely.
+`dVault` enables this flow to run securely and repeatedly.
 
 ## How it works
 
-We show how it works using SSH use-case.
+The system uses a combination of smart contract verification, encrypted storage, and distributed delivery:
 
-In simple words, we propose a way to generate a new key pair for any client or server by the admin user. Sign them using the Certificate Authority (CA). Then, using Diffie-Hellman key exchange, encrypt this key pair and distribute it through IPFS. To verify the integrity of the key pair, customer can use the smart contract. It can notify clients about new key pair availability through the smart contract and claim key pair hashes. After downloading it from IPFS and decryption, client can apply key pair locally (for example new SSH key pair or SSH CA). With such an approach, the **client** can be **sure** that this **key pair belongs** to the **particular admin** and can **trust** it. And by **encrypted way** of distribution **keys** can be **rotated often** to **improve** overall **system security.** Last but not least, everything can be done **without centralized servers** and **doesn't require** to have **own infrastructure.**
+1. Admin generates a new key pair for a client or server.
+2. The key pair is signed by a Certificate Authority (CA).
+3. Using Diffie-Hellman key exchange, the key pair is encrypted.
+4. The encrypted data is stored on IPFS.
+5. Smart contracts publish metadata and verify the integrity of the delivered secret.
+6. Clients download from IPFS, decrypt the data, and apply the new key pair.
 
-**Such system can work with any type of certificates or logic which require to distribute private information over the network. For example with TLS certificates.**
+With this approach, the client can verify the secret belongs to the correct admin, and keys can be rotated without relying on a centralized server.
 
-**Advantages of such an approach:**
+This model also works for TLS certificates and other secret material that must be distributed securely.
 
-1. All actions with certificate authorities and key pairs are publicity available.
-2. System activity history is immutable.
-3. Safe distribution of new certificates and key pairs.
-4. Fast certificates and key pairs rotation.
-5. Doesn't require centralized or cloud infrastructure at all.
-6. Distributed trust model to improve fault tolerance against system security violation.
-7. Even if your root certificate authority will be hacked it can be changed quickly.
-8. Certificates and key pairs storage is distrusted.
-9. Smart contracts are publicity available, everyone can check integrity logic and how system works.
-10. Only user which has smart contract private key can issue or revoke certificate, not centralized third-party layer.
+## Advantages
+
+1. Certificate authority actions and key operations are publicly auditable.
+2. System activity history remains immutable.
+3. Secret distribution is safer and more transparent.
+4. Certificate and key rotation becomes faster and easier.
+5. No centralized infrastructure or cloud dependency.
+6. Distributed trust improves resilience against security failures.
+7. A hacked root CA can be replaced quickly.
+8. Secret storage is decentralized rather than centralized.
+9. Smart contracts make integrity logic auditable.
+10. Only the smart contract private key holder can issue or revoke certificates.
 
 ## Future work
 
-There are some use-cases for future work.
+### Decentralized SSH certificate authority
 
-### Avoid centralized SSH certificate authority
+A smart contract can act as a distributed trust anchor instead of a centralized SSH CA. Devices would trust the contract and the admin public key interacting with it, allowing secure key delivery and policy enforcement through `authorized_keys` updates.
 
-By utilizing smart contracts, it is possible to avoid using SSH certificate authority but keep the same security level for SSH communication. Every device trusts the smart contract and the admin public key that is interacting with the smart contract. So we can deliver a new key pair through a smart contract and IPFS to the device. And devices can apply this new key pair using the `authorized_keys` file. This can be done on every device, its like trusted public keys exchange. With such an approach, systems can have distributed certificate authority (smart contract) instead of centralized one.
+### Temporary IIoT device access
 
-### IIoT device access
-
-For example user has an IIoT device and user needs access to it for 5 minutes only. User can issue new temporary SSH (or other) key pair, deliver it to the device and after doing some work revoke it. So it is easy and fast device access solution with secure rollback flow to avoid accessing device by hacker while it doesn't need remote access.
+For short-lived device access, issue a temporary SSH or certificate key pair, deliver it to the device, and revoke it after the task is complete. This enables secure, time-limited access with rollback protection.
 
 ### Microservices communication
 
-Microservices require secure communication with each other. With DPKI solution we can provide new key pair for every microservice deployed to the cloud and distribute it public key to other microservice. With such an approach communication between microservice will be secure and automatically initiated.
+For cloud-native deployments, `dVault` can provide per-service key pairs and distribute public keys to other services. This supports secure microservice communication with automated trust updates.
